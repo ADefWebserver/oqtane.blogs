@@ -11,7 +11,7 @@ namespace Oqtane.Blogs.Server.Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddMetaWeblog<MetaWeblogService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
