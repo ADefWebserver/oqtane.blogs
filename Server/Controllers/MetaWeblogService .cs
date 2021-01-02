@@ -7,23 +7,56 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Oqtane.Blogs.Models;
+using Oqtane.Blogs.Repository;
+using Oqtane.Repository;
+using Oqtane.Shared;
 using WilderMinds.MetaWeblog;
 
 namespace Oqtane.Blogs
 {
-    public class MetaWeblogService : IMetaWeblogProvider
+    public class MetaWeblogService : Controller, IMetaWeblogProvider
     {
-        string ADMINISTRATION_ROLE = "Administrators";
         private readonly IWebHostEnvironment _environment;
+        private readonly IConfigurationRoot _config;
         private IHttpContextAccessor _httpContextAccessor;
+
+        private readonly IUserRepository _users;
+        private readonly IRoleRepository _roles;
+        private readonly IUserRoleRepository _userRoles;
+
+        private readonly UserManager<IdentityUser> _identityUserManager;
+        private readonly SignInManager<IdentityUser> _identitySignInManager;
+
+        private readonly IBlogRepository _db;
 
         public MetaWeblogService(
             IWebHostEnvironment environment,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfigurationRoot config,
+
+            IUserRepository users, IRoleRepository roles, IUserRoleRepository userRoles,
+
+            UserManager<IdentityUser> identityUserManager, 
+            SignInManager<IdentityUser> identitySignInManager,
+
+            IBlogRepository Blogs)
         {
             _environment = environment;
             _httpContextAccessor = httpContextAccessor;
+            _config = config;
+
+            _users = users;
+            _roles = roles;
+            _userRoles = userRoles;
+
+            _identityUserManager = identityUserManager;
+            _identitySignInManager = identitySignInManager;
+
+            _db = Blogs;
         }
 
         #region public async Task<UserInfo> GetUserInfoAsync(string key, string username, string password)
@@ -31,23 +64,23 @@ namespace Oqtane.Blogs
         {
             UserInfo objUserInfo = new UserInfo();
 
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var Blogger = await _BlazorBlogsContext.AspNetUsers
-                    .Where(x => x.UserName == username)
-                    .FirstOrDefaultAsync();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var Blogger = await _db.Users
+            //        .Where(x => x.UserName == username)
+            //        .FirstOrDefaultAsync();
 
-                objUserInfo.userid = Blogger.Id;
-                objUserInfo.email = Blogger.Email;
-                objUserInfo.lastname = Blogger.DisplayName;
-                objUserInfo.nickname = Blogger.DisplayName;
-                objUserInfo.firstname = "";
-                objUserInfo.url = GetBaseUrl();
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //    objUserInfo.userid = Blogger.Id;
+            //    objUserInfo.email = Blogger.Email;
+            //    objUserInfo.nickname = Blogger.UserName;
+            //    objUserInfo.firstname = "";
+            //    objUserInfo.lastname = "";
+            //    objUserInfo.url = GetBaseUrl();
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return objUserInfo;
         }
@@ -58,24 +91,25 @@ namespace Oqtane.Blogs
         {
             BlogInfo[] colBlogInfo = new BlogInfo[1];
             colBlogInfo[0] = new BlogInfo();
+            var result = await IsValidMetaWeblogUserAsync(username, password);
 
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var Blogger = _BlazorBlogsContext.AspNetUsers
-                    .Where(x => x.UserName == username)
-                    .FirstOrDefault();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var Blogger = _db.Users
+            //        .Where(x => x.UserName == username)
+            //        .FirstOrDefault();
 
-                if (Blogger != null)
-                {
-                    colBlogInfo[0].blogid = Blogger.Id;
-                    colBlogInfo[0].blogName = Blogger.DisplayName ?? "";
-                    colBlogInfo[0].url = GetBaseUrl();
-                }
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //    if (Blogger != null)
+            //    {
+            //        colBlogInfo[0].blogid = Blogger.Id;
+            //        colBlogInfo[0].blogName = Blogger.UserName ?? "";
+            //        colBlogInfo[0].url = GetBaseUrl();
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return colBlogInfo;
         }
@@ -86,39 +120,32 @@ namespace Oqtane.Blogs
         {
             Post objPost = new Post();
 
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var Blogger = await _BlazorBlogsContext.AspNetUsers
-                    .Where(x => x.UserName == username)
-                    .FirstOrDefaultAsync();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var Blogger = await _db.Users
+            //        .Where(x => x.UserName == username)
+            //        .FirstOrDefaultAsync();
 
-                var BlogPost = await _BlazorBlogsContext.Blogs
-                    .Include(x => x.BlogCategory)
-                    .Where(x => x.BlogUserName == username)
-                    .Where(x => x.BlogId.ToString() == postid)
-                    .OrderBy(x => x.BlogDate).FirstOrDefaultAsync();
+            //    var BlogPost = await _db.Blog
+            //        .Where(x => x.CreatedBy == username)
+            //        .Where(x => x.BlogId.ToString() == postid)
+            //        .OrderBy(x => x.CreatedOn).FirstOrDefaultAsync();
 
-                objPost.title = BlogPost.BlogTitle;
+            //    objPost.title = BlogPost.Title;
 
-                objPost.categories = _BlazorBlogsContext.Categorys
-                    .Where(x => BlogPost.BlogCategory
-                    .Select(x => x.CategoryId)
-                    .Contains(x.CategoryId))
-                    .Select(c => c.Title.ToString()).ToArray();
-
-                objPost.postid = BlogPost.BlogId;
-                objPost.dateCreated = BlogPost.BlogDate;
-                objPost.userid = Blogger.Id;
-                objPost.description = BlogPost.BlogContent;
-                objPost.wp_slug = BlogPost.BlogSummary;
-                objPost.link = $"{GetBaseUrl()}/ViewBlogPost/{BlogPost.BlogId}";
-                objPost.permalink = $"{GetBaseUrl()}/ViewBlogPost/{BlogPost.BlogId}";
-                objPost.mt_excerpt = BlogPost.BlogSummary;
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //    objPost.postid = BlogPost.BlogId;
+            //    objPost.dateCreated = BlogPost.CreatedOn;
+            //    objPost.userid = Blogger.Id;
+            //    objPost.description = BlogPost.Title;
+            //    objPost.wp_slug = BlogPost.Title;
+            //    objPost.link = $"{GetBaseUrl()}/ViewBlogPost/{BlogPost.BlogId}";
+            //    objPost.permalink = $"{GetBaseUrl()}/ViewBlogPost/{BlogPost.BlogId}";
+            //    objPost.mt_excerpt = BlogPost.Title;
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return objPost;
         }
@@ -129,45 +156,38 @@ namespace Oqtane.Blogs
         {
             List<Post> Posts = new List<Post>();
 
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var Blogger = await _BlazorBlogsContext.AspNetUsers
-                    .Where(x => x.UserName == username)
-                    .FirstOrDefaultAsync();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var Blogger = await _db.Users
+            //        .Where(x => x.UserName == username)
+            //        .FirstOrDefaultAsync();
 
-                var BlogPosts = await _BlazorBlogsContext.Blogs
-                    .Include(x => x.BlogCategory)
-                    .Where(x => x.BlogUserName == username)
-                    .Take(numberOfPosts)
-                    .OrderByDescending(x => x.BlogDate).ToListAsync();
+            //    var BlogPosts = await _db.Blog
+            //        .Where(x => x.CreatedBy == username)
+            //        .Take(numberOfPosts)
+            //        .OrderByDescending(x => x.CreatedOn).ToListAsync();
 
-                foreach (var item in BlogPosts)
-                {
-                    Post objPost = new Post();
-                    objPost.title = item.BlogTitle;
+            //    foreach (var item in BlogPosts)
+            //    {
+            //        Post objPost = new Post();
+            //        objPost.title = item.Title;
 
-                    objPost.categories = _BlazorBlogsContext.Categorys
-                        .Where(x => item.BlogCategory
-                        .Select(x => x.CategoryId)
-                        .Contains(x.CategoryId))
-                        .Select(c => c.Title.ToString()).ToArray();
+            //        objPost.postid = item.BlogId;
+            //        objPost.dateCreated = item.CreatedOn;
+            //        objPost.userid = Blogger.Id;
+            //        objPost.description = item.Title;
+            //        objPost.wp_slug = item.Title;
+            //        objPost.link = $"{GetBaseUrl()}/ViewBlogPost/{item.BlogId}";
+            //        objPost.permalink = $"{GetBaseUrl()}/ViewBlogPost/{item.BlogId}";
+            //        objPost.mt_excerpt = item.Title;
 
-                    objPost.postid = item.BlogId;
-                    objPost.dateCreated = item.BlogDate;
-                    objPost.userid = Blogger.Id;
-                    objPost.description = item.BlogContent;
-                    objPost.wp_slug = item.BlogSummary;
-                    objPost.link = $"{GetBaseUrl()}/ViewBlogPost/{item.BlogId}";
-                    objPost.permalink = $"{GetBaseUrl()}/ViewBlogPost/{item.BlogId}";
-                    objPost.mt_excerpt = item.BlogSummary;
-
-                    Posts.Add(objPost);
-                }
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //        Posts.Add(objPost);
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return Posts.ToArray();
         }
@@ -178,192 +198,120 @@ namespace Oqtane.Blogs
         {
             string BlogPostID = "";
 
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                try
-                {
-                    Blogs objBlogs = new Blogs();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    try
+            //    {
+            //        Blog objBlogs = new Blog();
 
-                    objBlogs.BlogId = 0;
-                    objBlogs.BlogUserName = username;
+            //        objBlogs.BlogId = 0;
+            //        objBlogs.CreatedBy = username;
 
-                    if (post.dateCreated > Convert.ToDateTime("1/1/1900"))
-                    {
-                        objBlogs.BlogDate =
-                            post.dateCreated;
-                    }
-                    else
-                    {
-                        objBlogs.BlogDate = DateTime.Now;
-                    }
+            //        if (post.dateCreated > Convert.ToDateTime("1/1/1900"))
+            //        {
+            //            objBlogs.CreatedOn =
+            //                post.dateCreated;
+            //        }
+            //        else
+            //        {
+            //            objBlogs.CreatedOn = DateTime.Now;
+            //        }
 
-                    objBlogs.BlogTitle =
-                        post.title;
+            //        objBlogs.Title =
+            //            post.title;
 
-                    objBlogs.BlogContent =
-                        post.description;
+            //        objBlogs.Content =
+            //            post.description;
 
-                    if (post.description != null)
-                    {
-                        string strSummary = ConvertToText(post.description);
-                        int intSummaryLength = strSummary.Length;
-                        if (intSummaryLength > 500)
-                        {
-                            intSummaryLength = 500;
-                        }
+            //        _db.Add(objBlogs);
+            //        _db.SaveChanges();
+            //        BlogPostID = objBlogs.BlogId.ToString();
 
-                        objBlogs.BlogSummary = strSummary.Substring(0, intSummaryLength);
-                    }
-
-                    _BlazorBlogsContext.Add(objBlogs);
-                    _BlazorBlogsContext.SaveChanges();
-                    BlogPostID = objBlogs.BlogId.ToString();
-
-                    if (post.categories != null)
-                    {
-                        objBlogs.BlogCategory =
-                            GetBlogCategories(objBlogs, post.categories);
-                    }
-
-                    _BlazorBlogsContext.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.GetBaseException().Message);
-                }
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //        _db.SaveChanges();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new Exception(ex.GetBaseException().Message);
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return BlogPostID;
-        } 
+        }
         #endregion
 
         #region public async Task<bool> DeletePostAsync(string key, string postid, string username, string password, bool publish)
         public async Task<bool> DeletePostAsync(string key, string postid, string username, string password, bool publish)
         {
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var ExistingBlogs =
-                    _BlazorBlogsContext.Blogs
-                    .Where(x => x.BlogId == Convert.ToInt32(postid))
-                    .FirstOrDefault();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var ExistingBlogs =
+            //        _db.Blog
+            //        .Where(x => x.BlogId == Convert.ToInt32(postid))
+            //        .FirstOrDefault();
 
-                if (ExistingBlogs != null)
-                {
-                    _BlazorBlogsContext.Blogs.Remove(ExistingBlogs);
-                    _BlazorBlogsContext.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("Blog not found");
-                }
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
+            //    if (ExistingBlogs != null)
+            //    {
+            //        _db.Blog.Remove(ExistingBlogs);
+            //        _db.SaveChanges();
+            //    }
+            //    else
+            //    {
+            //        throw new Exception("Blog not found");
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("Bad user name or password");
+            //}
 
             return true;
-        } 
+        }
         #endregion
 
         #region public async Task<bool> EditPostAsync(string postid, string username, string password, Post post, bool publish)
         public async Task<bool> EditPostAsync(string postid, string username, string password, Post post, bool publish)
         {
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var ExistingBlogs = await
-                                    _BlazorBlogsContext.Blogs
-                                    .Include(x => x.BlogCategory)
-                                    .Where(x => x.BlogId == Convert.ToInt32(postid))
-                                    .FirstOrDefaultAsync();
+            //if (await IsValidMetaWeblogUserAsync(username, password))
+            //{
+            //    var ExistingBlogs = await
+            //                        _db.Blog
+            //                        .Where(x => x.BlogId == Convert.ToInt32(postid))
+            //                        .FirstOrDefaultAsync();
 
-                if (ExistingBlogs != null)
-                {
-                    try
-                    {
-                        if (post.dateCreated > Convert.ToDateTime("1/1/1900"))
-                        {
-                            ExistingBlogs.BlogDate =
-                                post.dateCreated;
-                        }
+            //    if (ExistingBlogs != null)
+            //    {
+            //        try
+            //        {
+            //            if (post.dateCreated > Convert.ToDateTime("1/1/1900"))
+            //            {
+            //                ExistingBlogs.CreatedOn =
+            //                    post.dateCreated;
+            //            }
 
-                        ExistingBlogs.BlogTitle =
-                            post.title;
+            //            ExistingBlogs.Title =
+            //                post.title;
 
-                        ExistingBlogs.BlogContent =
-                            post.description;
+            //            ExistingBlogs.Content =
+            //                post.description;
 
-                        if (post.description != null)
-                        {
-                            string strSummary = ConvertToText(post.description);
-                            int intSummaryLength = strSummary.Length;
-                            if (intSummaryLength > 500)
-                            {
-                                intSummaryLength = 500;
-                            }
-
-                            ExistingBlogs.BlogSummary = strSummary.Substring(0, intSummaryLength);
-                        }
-
-                        if (post.categories == null)
-                        {
-                            ExistingBlogs.BlogCategory = null;
-                        }
-                        else
-                        {
-                            ExistingBlogs.BlogCategory =
-                                GetBlogCategories(ExistingBlogs, post.categories);
-                        }
-
-                        _BlazorBlogsContext.SaveChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.GetBaseException().Message);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Bad user name or password");
-                }
-            }
+            //            _db.SaveChanges();
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            throw new Exception(ex.GetBaseException().Message);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        throw new Exception("Bad user name or password");
+            //    }
+            //}
 
             return true;
-        } 
-        #endregion
-
-        #region public async Task<CategoryInfo[]> GetCategoriesAsync(string blogid, string username, string password)
-        public async Task<CategoryInfo[]> GetCategoriesAsync(string blogid, string username, string password)
-        {
-            List<CategoryInfo> colCategoryInfo = new List<CategoryInfo>();
-
-            if (await IsValidMetaWeblogUserAsync(username, password))
-            {
-                var Categorys = await _BlazorBlogsContext.Categorys.ToListAsync();
-
-                foreach (var item in Categorys)
-                {
-                    CategoryInfo objCategoryInfo = new CategoryInfo();
-
-                    objCategoryInfo.categoryid = item.CategoryId.ToString();
-                    objCategoryInfo.description = item.Description;
-                    objCategoryInfo.title = item.Title;
-                    objCategoryInfo.htmlUrl = GetBaseUrl();
-                    objCategoryInfo.rssUrl = GetBaseUrl();
-
-                    colCategoryInfo.Add(objCategoryInfo);
-                }
-            }
-            else
-            {
-                throw new Exception("Bad user name or password");
-            }
-
-            return colCategoryInfo.ToArray();
         }
         #endregion
 
@@ -413,6 +361,19 @@ namespace Oqtane.Blogs
         #endregion
 
         #region ** Not Implemented **
+        public async Task<CategoryInfo[]> GetCategoriesAsync(string blogid, string username, string password)
+        {
+            if (await IsValidMetaWeblogUserAsync(username, password))
+            {
+
+            }
+            else
+            {
+                throw new Exception("Bad user name or password");
+            }
+
+            throw new Exception("Bad user name or password");
+        }
         public async Task<int> AddCategoryAsync(string key, string username, string password, NewCategory category)
         {
             if (await IsValidMetaWeblogUserAsync(username, password))
@@ -602,16 +563,39 @@ namespace Oqtane.Blogs
 
         // Utility
 
+
         #region private async Task<bool> IsValidMetaWeblogUserAsync(string username, string password)
         private async Task<bool> IsValidMetaWeblogUserAsync(string username, string password)
         {
             // Get user
-            var objApplicationUser = await _userManager.FindByEmailAsync(username);
 
-            // MUst be an Administrator
-            if (await _userManager.IsInRoleAsync(objApplicationUser, ADMINISTRATION_ROLE))
+            string DatabaseConnectionString = NormalizeConnectionString(_config.GetConnectionString(SettingKeys.ConnectionStringKey));
+
+            IdentityUser identityuser = await _identityUserManager.FindByNameAsync(username);
+
+            if (identityuser != null)
             {
-                return await _userManager.CheckPasswordAsync(objApplicationUser, password);
+                var result = await _identitySignInManager.CheckPasswordSignInAsync(identityuser, password, false);
+
+                if (result.Succeeded)
+                {
+                    // Must be an Administrator
+                    List<Oqtane.Models.UserRole> userroles = _userRoles.GetUserRoles(Convert.ToInt32(identityuser.Id), 1).ToList();
+
+                    foreach (Oqtane.Models.UserRole userrole in userroles)
+                    {
+                        if (userrole.Role.Name == RoleNames.Admin)
+                        {
+                            return true;
+                        }
+                    }
+                    
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -630,32 +614,6 @@ namespace Oqtane.Blogs
             var pathBase = request.PathBase.ToUriComponent();
 
             return $"{request.Scheme}://{host}{pathBase}";
-        }
-        #endregion
-
-        #region private List<BlogCategory> GetBlogCategories(BlogDTO objBlogs, IEnumerable<string> blogCatagories)
-        private List<BlogCategory> GetBlogCategories(Blogs objBlogs, IEnumerable<string> blogCatagories)
-        {
-            List<BlogCategory> colBlogCategory = new List<BlogCategory>();
-
-            foreach (var item in blogCatagories)
-            {
-                // Get the Category
-                var Category = _BlazorBlogsContext.Categorys
-                    .Where(x => x.Title == item)
-                    .AsNoTracking()
-                    .FirstOrDefault();
-
-                // Create a new BlogCategory
-                BlogCategory NewBlogCategory = new BlogCategory();
-                NewBlogCategory.BlogId = objBlogs.BlogId;
-                NewBlogCategory.CategoryId = Category.CategoryId;
-
-                // Add it to the list
-                colBlogCategory.Add(NewBlogCategory);
-            }
-
-            return colBlogCategory;
         }
         #endregion
 
@@ -697,6 +655,15 @@ namespace Oqtane.Blogs
             //Replace Tags by replacement String and return mofified string
             return System.Text.RegularExpressions.Regex.Replace(HTML, "<[^>]*>", RepString);
         }
+        #endregion
+
+        #region private string NormalizeConnectionString(string connectionString)
+        private string NormalizeConnectionString(string connectionString)
+        {
+            var dataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory")?.ToString();
+            connectionString = connectionString.Replace("|DataDirectory|", dataDirectory);
+            return connectionString;
+        } 
         #endregion
     }
 }
