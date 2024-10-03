@@ -1,37 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <Version>1.0.1</Version>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>5.2.0</Version>
     <Product>Oqtane.Blogs</Product>
-    <Authors>Oqtane</Authors>
-    <Company>Oqtane</Company>
+    <Authors>Shaun Walker</Authors>
+    <Company>.NET Foundation</Company>
     <Description>A Blog Module for the Oqtane Framework</Description>
-    <Copyright>Oqtane</Copyright>
+    <Copyright>.NET Foundation</Copyright>
     <AssemblyName>Oqtane.Blogs.Server.Oqtane</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Oqtane.Blogs.1.0.0.sql" />
-    <EmbeddedResource Include="Scripts\Oqtane.Blogs.Uninstall.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+	  <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Oqtane.Blogs.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Oqtane.Server" Version="2.0.0" />
-    <PackageReference Include="Oqtane.Shared" Version="2.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Oqtane.Server" Version="5.2.0" />
+		<PackageReference Include="Oqtane.Shared" Version="5.2.0" />
+	</ItemGroup>
+	
 </Project>

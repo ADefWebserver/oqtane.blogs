@@ -123,10 +123,100 @@
   <data name="Title.HelpText" xml:space="preserve">
     <value>Enter the title of your blog</value>
   </data>
-  <data name="Blog.Text" xml:space="preserve">
-    <value>Blog:</value>
+  <data name="Content.Text" xml:space="preserve">
+    <value>Content:</value>
   </data>
-  <data name="Blog.HelpText" xml:space="preserve">
+  <data name="Content.HelpText" xml:space="preserve">
     <value>Enter the content of your blog</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Error Loading Blog" xml:space="preserve">
+    <value>Error Loading Blog</value>
+  </data>
+  <data name="Error Saving Blog" xml:space="preserve">
+    <value>Error Saving Blog</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Published.HelpText" xml:space="preserve">
+    <value>Indicate if this version of blog content is visible to all users or only editors (ie.draft)</value>
+  </data>
+  <data name="Published.Text" xml:space="preserve">
+    <value>Published?</value>
+  </data>
+  <data name="Message.Notified" xml:space="preserve">
+    <value>{0} Subscribers Have Been Notified</value>
+  </data>
+  <data name="Notify" xml:space="preserve">
+    <value>Notify</value>
+  </data>
+  <data name="Blog Saved" xml:space="preserve">
+    <value>Blog Saved</value>
+  </data>
+  <data name="Error Sending Notifications" xml:space="preserve">
+    <value>Error Sending Notifications</value>
+  </data>
+  <data name="DeleteBlog.Header" xml:space="preserve">
+    <value>Delete Blog</value>
+  </data>
+  <data name="DeleteBlog.Message" xml:space="preserve">
+    <value>Are You Sure You Wish To Delete This Blog?</value>
+  </data>
+  <data name="DeleteBlog.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ErrorDeleting" xml:space="preserve">
+    <value>Error Deleting Blog</value>
+  </data>
+  <data name="Categories.HelpText" xml:space="preserve">
+    <value>Select the categories of your blog</value>
+  </data>
+  <data name="Categories.Text" xml:space="preserve">
+    <value>Categories:</value>
+  </data>
+  <data name="Slug.HelpText" xml:space="preserve">
+    <value>Enter the slug of your blog</value>
+  </data>
+  <data name="Slug.Text" xml:space="preserve">
+    <value>Slug:</value>
+  </data>
+  <data name="Tags.HelpText" xml:space="preserve">
+    <value>Optionally enter a comma-delimited list of tags related to the blog</value>
+  </data>
+  <data name="Tags.Text" xml:space="preserve">
+    <value>Tags:</value>
+  </data>
+  <data name="PublishDate.HelpText" xml:space="preserve">
+    <value>Select the publish date of this blog post. This date controls both visibility of the blog post as well as sort order in the summary view.</value>
+  </data>
+  <data name="PublishDate.Text" xml:space="preserve">
+    <value>Publish Date:</value>
+  </data>
+  <data name="ContentVersions.Text" xml:space="preserve">
+    <value>Versions History</value>
+  </data>
+  <data name="AlternateText.HelpText" xml:space="preserve">
+    <value>Enter the alternate text for the thumbnail</value>
+  </data>
+  <data name="AlternateText.Text" xml:space="preserve">
+    <value>Alternate Text:</value>
+  </data>
+  <data name="PublishDate.Required" xml:space="preserve">
+    <value>Please enter the publish date.</value>
+  </data>
+  <data name="SlugExist" xml:space="preserve">
+    <value>The slug has already been used by another blog item.</value>
+  </data>
+  <data name="Thumbnail.HelpText" xml:space="preserve">
+    <value>Optionally select an image for the blog post</value>
+  </data>
+  <data name="Thumbnail.Text" xml:space="preserve">
+    <value>Thumbnail:</value>
+  </data>
+  <data name="Categories.Required" xml:space="preserve">
+    <value>Please select at least one category</value>
   </data>
 </root>

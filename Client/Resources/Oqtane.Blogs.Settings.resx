@@ -117,16 +117,127 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MaximumBlogEntries.Text" xml:space="preserve">
-    <value>Maximum Blog Entries:</value>
+  <data name="Items.Text" xml:space="preserve">
+    <value>Items Per Page:</value>
   </data>
-  <data name="MaximumBlogEntries.HelpText" xml:space="preserve">
-    <value>Enter the maximum number of blogs to display on a page</value>
+  <data name="Items.HelpText" xml:space="preserve">
+    <value>Enter the maximum items per page</value>
   </data>
-  <data name="SummaryLength.Text" xml:space="preserve">
-    <value>Summary Length (Characters):</value>
+  <data name="Summary.Text" xml:space="preserve">
+    <value>Summary Template:</value>
   </data>
-  <data name="SummaryLength.HelpText" xml:space="preserve">
-    <value>Enter the maximum length of the blog to display in the summary view</value>
+  <data name="Summary.HelpText" xml:space="preserve">
+    <value>Enter the summary blog template</value>
+  </data>
+  <data name="Detail.HelpText" xml:space="preserve">
+    <value>Enter the detail blog template</value>
+  </data>
+  <data name="Detail.Text" xml:space="preserve">
+    <value>Detail Template:</value>
+  </data>
+  <data name="Sender.HelpText" xml:space="preserve">
+    <value>Email address which subscriptions will be sent from</value>
+  </data>
+  <data name="Sender.Text" xml:space="preserve">
+    <value>Sender:</value>
+  </data>
+  <data name="Subscriptions.HelpText" xml:space="preserve">
+    <value>Do you wish to allow email subscriptions to the blog?</value>
+  </data>
+  <data name="Subscriptions.Text" xml:space="preserve">
+    <value>Subscriptions?</value>
+  </data>
+  <data name="SearchProperties.HelpText" xml:space="preserve">
+    <value>Specify if users can search blog posts</value>
+  </data>
+  <data name="SearchProperties.Text" xml:space="preserve">
+    <value>Allow Search?</value>
+  </data>
+  <data name="ColumnCssClass.HelpText" xml:space="preserve">
+    <value>Enter the Column CSS class for each summary blog post</value>
+  </data>
+  <data name="ColumnCssClass.Text" xml:space="preserve">
+    <value>Summary Column CSS Class:</value>
+  </data>
+  <data name="Bottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="PagerPosition.HelpText" xml:space="preserve">
+    <value>Select the position of the pager</value>
+  </data>
+  <data name="PagerPosition.Text" xml:space="preserve">
+    <value>Pager Position:</value>
+  </data>
+  <data name="Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SEO" xml:space="preserve">
+    <value>SEO Settings</value>
+  </data>
+  <data name="Subscriptions" xml:space="preserve">
+    <value>Subscriptions</value>
+  </data>
+  <data name="ArchiveTitle.HelpText" xml:space="preserve">
+    <value>Title of the archive list</value>
+  </data>
+  <data name="ArchiveTitle.Text" xml:space="preserve">
+    <value>Archive Title:</value>
+  </data>
+  <data name="CategoryTitle.HelpText" xml:space="preserve">
+    <value>Title of the list view by category</value>
+  </data>
+  <data name="CategoryTitle.Text" xml:space="preserve">
+    <value>Category Title:</value>
+  </data>
+  <data name="PageTitle.HelpText" xml:space="preserve">
+    <value>Title of the detail page</value>
+  </data>
+  <data name="PageTitle.Text" xml:space="preserve">
+    <value>Page Title:</value>
+  </data>
+  <data name="PaginationTitle.HelpText" xml:space="preserve">
+    <value>Title suffix of the pagination info</value>
+  </data>
+  <data name="PaginationTitle.Text" xml:space="preserve">
+    <value>Pagination Title:</value>
+  </data>
+  <data name="TagTitle.HelpText" xml:space="preserve">
+    <value>Title of the list view by tag</value>
+  </data>
+  <data name="TagTitle.Text" xml:space="preserve">
+    <value>Tag Title:</value>
+  </data>
+  <data name="MetaTags.HelpText" xml:space="preserve">
+    <value>Specify meta tags for the blog detail page</value>
+  </data>
+  <data name="MetaTags.Text" xml:space="preserve">
+    <value>Meta Tags:</value>
+  </data>
+  <data name="ArchiveDescription.HelpText" xml:space="preserve">
+    <value>Description of the archive list</value>
+  </data>
+  <data name="ArchiveDescription.Text" xml:space="preserve">
+    <value>Archive Description:</value>
+  </data>
+  <data name="CategoryDescription.HelpText" xml:space="preserve">
+    <value>Description of the list view by category</value>
+  </data>
+  <data name="CategoryDescription.Text" xml:space="preserve">
+    <value>Category Description:</value>
+  </data>
+  <data name="TagDescription.HelpText" xml:space="preserve">
+    <value>Description of the list view by tag</value>
+  </data>
+  <data name="TagDescription.Text" xml:space="preserve">
+    <value>Tag Description:</value>
+  </data>
+  <data name="Both" xml:space="preserve">
+    <value>Both</value>
+  </data>
+  <data name="RowCssClass.HelpText" xml:space="preserve">
+    <value>Enter the Row CSS class for each summary blog post</value>
+  </data>
+  <data name="RowCssClass.Text" xml:space="preserve">
+    <value>Summary Row CSS Class:</value>
   </data>
 </root>
